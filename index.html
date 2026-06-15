@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI 英文單字學習</title>
+<title>LexDrop — AI 英文單字</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -35,7 +35,7 @@
     padding: 18px 24px 14px;
     display: flex;
     align-items: baseline;
-    gap: 12px;
+    gap: 10px;
   }
   header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
   header .ver {
@@ -57,11 +57,35 @@
   }
   header .model-badge:hover { background: rgba(255,255,255,.2); }
 
-  /* ── Main layout ── */
-  main {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 28px 16px 0;
+  /* ── Main ── */
+  main { max-width: 620px; margin: 0 auto; padding: 28px 16px 0; }
+
+  /* ── Level row ── */
+  .level-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .level-btn {
+    font-size: .78rem; padding: 5px 14px;
+    border: 1px solid var(--border); border-radius: 20px;
+    background: var(--card); color: var(--ink3); cursor: pointer;
+    font-family: "SF Mono","Fira Mono",monospace;
+    transition: all .15s;
+  }
+  .level-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── TTS speed row ── */
+  .speed-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px;
+    font-size: .8rem; color: var(--ink3);
+    font-family: "SF Mono","Fira Mono",monospace;
+  }
+  .speed-row label { white-space: nowrap; }
+  .speed-row input[type=range] {
+    flex: 1; accent-color: var(--accent);
+    height: 4px; cursor: pointer;
+  }
+  .speed-val {
+    min-width: 36px; text-align: right;
+    color: var(--ink2); font-weight: 600;
   }
 
   /* ── Card ── */
@@ -79,101 +103,45 @@
 
   .word-card .tag {
     font-family: "SF Mono","Fira Mono",monospace;
-    font-size: .7rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: var(--accent-light);
-    border-radius: 20px;
-    padding: 3px 10px;
-    display: inline-block;
-    margin-bottom: 14px;
+    font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-light);
+    border-radius: 20px; padding: 3px 10px;
+    display: inline-block; margin-bottom: 14px;
   }
-
-  /* word row: word + TTS button */
-  .word-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 2px;
-  }
+  .word-row { display: flex; align-items: center; gap: 12px; margin-bottom: 2px; }
   .word-card .en-word {
-    font-size: 2.6rem;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    line-height: 1.1;
-    color: var(--ink);
+    font-size: 2.6rem; font-weight: 700;
+    letter-spacing: -.01em; line-height: 1.1; color: var(--ink);
   }
   .word-card .phonetic {
     font-family: "SF Mono","Fira Mono",monospace;
-    font-size: .9rem;
-    color: var(--ink3);
-    margin: 6px 0 4px;
+    font-size: .9rem; color: var(--ink3); margin: 6px 0 4px;
   }
-  .word-card .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 18px 0;
-  }
-  .word-card .zh-meaning {
-    font-size: 1.25rem;
-    color: var(--ink);
-    margin-bottom: 18px;
-    font-weight: 500;
-  }
+  .word-card .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+  .word-card .zh-meaning { font-size: 1.25rem; color: var(--ink); margin-bottom: 18px; font-weight: 500; }
+
   .section-label {
     font-family: "SF Mono","Fira Mono",monospace;
-    font-size: .68rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    margin-bottom: 6px;
+    font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink3); margin-bottom: 6px;
   }
-
-  /* sentence row */
   .sentence-block { margin-bottom: 8px; }
-  .sentence-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .word-card .sentence-en {
-    font-size: 1rem;
-    line-height: 1.65;
-    color: var(--ink2);
-    flex: 1;
-  }
-  .word-card .sentence-zh {
-    font-size: .9rem;
-    color: var(--ink3);
-    line-height: 1.6;
-    margin-top: 6px;
-  }
-  .word-card .kw {
-    color: var(--accent);
-    font-weight: 600;
-  }
+  .sentence-row { display: flex; align-items: flex-start; gap: 10px; }
+  .word-card .sentence-en { font-size: 1rem; line-height: 1.65; color: var(--ink2); flex: 1; }
+  .word-card .sentence-zh { font-size: .9rem; color: var(--ink3); line-height: 1.6; margin-top: 6px; }
+  .word-card .kw { color: var(--accent); font-weight: 600; }
 
   /* ── TTS button ── */
   .tts-btn {
-    flex-shrink: 0;
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--paper);
-    color: var(--ink3);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    transition: background .15s, color .15s, transform .1s;
-    line-height: 1;
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--paper); color: var(--ink3);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; transition: background .15s, color .15s, transform .1s; line-height: 1;
   }
   .tts-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
   .tts-btn:active { transform: scale(.92); }
   .tts-btn.speaking {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
+    background: var(--accent); color: #fff; border-color: var(--accent);
     animation: pulse 1s ease-in-out infinite;
   }
   @keyframes pulse {
@@ -183,77 +151,51 @@
 
   /* ── Placeholder ── */
   .placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    min-height: 280px;
-    color: var(--ink3);
-    text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; min-height: 280px;
+    color: var(--ink3); text-align: center;
   }
   .placeholder .big-icon { font-size: 3rem; }
   .placeholder p { font-size: .95rem; }
 
   /* ── Spinner ── */
   .spinner-wrap {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .2s;
+    pointer-events: none; opacity: 0; transition: opacity .2s;
   }
   .word-card.loading .spinner-wrap { opacity: 1; }
   .spinner {
     width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin .75s linear infinite;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .75s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── Action bar ── */
-  .action-bar {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
+  .action-bar { display: flex; gap: 10px; margin-top: 20px; }
   .btn {
-    font-family: "Georgia", serif;
-    font-size: .9rem;
-    border: none;
-    border-radius: 10px;
-    padding: 11px 20px;
-    cursor: pointer;
-    transition: opacity .15s, transform .1s;
-    line-height: 1;
+    font-family: "Georgia", serif; font-size: .9rem; border: none;
+    border-radius: 10px; padding: 11px 20px; cursor: pointer;
+    transition: opacity .15s, transform .1s; line-height: 1;
   }
   .btn:active { transform: scale(.97); }
   .btn:disabled { opacity: .4; cursor: default; }
   .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    flex: 1;
-    font-weight: 700;
-    font-size: 1rem;
+    background: var(--accent); color: #fff; flex: 1;
+    font-weight: 700; font-size: 1rem;
   }
   .btn-primary:hover:not(:disabled) { opacity: .88; }
 
-  /* ── Model modal ── */
+  /* ── Modal ── */
   .overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.35);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100;
+    position: fixed; inset: 0; background: rgba(0,0,0,.35);
+    display: none; align-items: center; justify-content: center; z-index: 100;
   }
   .overlay.show { display: flex; }
   .modal {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 24px 22px;
-    width: 300px;
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px 22px; width: 300px;
     box-shadow: 0 8px 40px rgba(0,0,0,.2);
   }
   .modal h2 { font-size: 1rem; margin-bottom: 14px; }
@@ -268,7 +210,8 @@
 
   /* ── Toast ── */
   .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
     background: #1f1f2e; color: #fff;
     padding: 12px 20px; border-radius: 10px;
     font-size: .88rem; max-width: 360px; text-align: center;
@@ -276,47 +219,42 @@
     opacity: 0; pointer-events: none; z-index: 200;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-  /* ── Level select ── */
-  .level-row {
-    display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
-  }
-  .level-btn {
-    font-size: .78rem; padding: 5px 14px;
-    border: 1px solid var(--border); border-radius: 20px;
-    background: var(--card); color: var(--ink3); cursor: pointer;
-    font-family: "SF Mono","Fira Mono",monospace;
-    transition: all .15s;
-  }
-  .level-btn.active {
-    background: var(--accent); color: #fff; border-color: var(--accent);
-  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>📚 AI 英文單字</h1>
-  <span class="ver">v1.1.0</span>
+  <h1>✦ LexDrop</h1>
+  <span class="ver">v1.2.0</span>
   <span class="model-badge" id="model-badge" onclick="openModal()">gemma4:e4b ▾</span>
 </header>
 
 <main>
+  <!-- Level -->
   <div class="level-row">
     <button class="level-btn" onclick="setLevel('國小',this)">國小</button>
     <button class="level-btn" onclick="setLevel('國中',this)">國中</button>
     <button class="level-btn active" onclick="setLevel('高中',this)">高中</button>
     <button class="level-btn" onclick="setLevel('大學',this)">大學</button>
     <button class="level-btn" onclick="setLevel('GRE',this)">GRE</button>
-    <button class="level-btn" onclick="setLevel('日常口語',this)">口語</button>
+    <button class="level-btn" onclick="setLevel('口語',this)">口語</button>
   </div>
 
+  <!-- TTS Speed -->
+  <div class="speed-row">
+    <label>🔊 語速</label>
+    <input type="range" id="speed-slider" min="0.5" max="1.5" step="0.05" value="0.85"
+           oninput="updateSpeed(this.value)">
+    <span class="speed-val" id="speed-val">0.85×</span>
+  </div>
+
+  <!-- Card -->
   <div class="word-card" id="word-card">
     <div class="spinner-wrap"><div class="spinner"></div></div>
     <div id="card-content">
       <div class="placeholder">
         <div class="big-icon">✦</div>
-        <p>按下「下一個單字」<br>讓 AI 給你出題</p>
+        <p>按下「下一個單字」<br>讓 AI 隨機出題</p>
       </div>
     </div>
   </div>
@@ -347,34 +285,43 @@
 
 <script>
 const BASE = "https://spring-art-db47.twlin628.workers.dev";
-let model = localStorage.getItem("vocab_model") || "gemma4:e4b";
-let level = "高中";
-let busy  = false;
+let model   = localStorage.getItem("vocab_model") || "gemma4:e4b";
+let level   = "高中";
+let ttsRate = 0.85;
+let busy    = false;
 
 document.getElementById("model-badge").textContent = model + " ▾";
 document.getElementById("model-select").value = model;
+
+// ── Speed slider ──
+function updateSpeed(val) {
+  ttsRate = parseFloat(val);
+  document.getElementById("speed-val").textContent = ttsRate.toFixed(2) + "×";
+}
 
 // ── TTS ──
 const synth = window.speechSynthesis;
 let activeTtsBtn = null;
 
-function speak(text, btn) {
-  if (!synth) { showToast("⚠ 此瀏覽器不支援 TTS"); return; }
+// iOS: voices load async — trigger load early
+if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = () => {};
+if (synth) synth.getVoices();
 
-  // 若正在說話：停止
+function speak(text, btn) {
+  if (!synth) { showToast("⚠ 此瀏覽器不支援語音合成"); return; }
+
   if (synth.speaking) {
     synth.cancel();
     if (activeTtsBtn) { activeTtsBtn.classList.remove("speaking"); activeTtsBtn.textContent = "🔊"; }
-    if (activeTtsBtn === btn) { activeTtsBtn = null; return; } // 再按同一個 = 停止
+    if (activeTtsBtn === btn) { activeTtsBtn = null; return; }
   }
 
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = "en-US";
-  utt.rate = 0.9;
+  const utt  = new SpeechSynthesisUtterance(text);
+  utt.lang   = "en-US";
+  utt.rate   = ttsRate;
 
-  // 優先選英文語音
-  const voices = synth.getVoices();
-  const enVoice = voices.find(v => v.lang.startsWith("en") && v.localService)
+  const voices   = synth.getVoices();
+  const enVoice  = voices.find(v => v.lang.startsWith("en") && v.localService)
                 || voices.find(v => v.lang.startsWith("en"));
   if (enVoice) utt.voice = enVoice;
 
@@ -392,9 +339,68 @@ function speak(text, btn) {
   synth.speak(utt);
 }
 
-// iOS: voices load async
-if (synth && synth.onvoiceschanged !== undefined) {
-  synth.onvoiceschanged = () => {};
+// ── Level config with tier weights ──
+// 每個等級定義三個難度層(tier)，各有範圍描述和抽中機率
+// 用隨機數決定本次從哪個 tier 出題，讓分布更平均
+const LEVEL_CONFIG = {
+  "國小": {
+    total: "約500字（教育部基本1200字前段）",
+    tiers: [
+      { weight: 0.20, desc: "第一層：最高頻50字，如 go, big, run, sit（刻意壓低出現率）" },
+      { weight: 0.40, desc: "第二層：中頻200字，如 library, weather, careful, surprised, friendly" },
+      { weight: 0.40, desc: "第三層：低頻250字，如 harvest, treasure, polite, curious, proud" },
+    ]
+  },
+  "國中": {
+    total: "約700字新增（累計~1200字，教育部基本1200字完整版）",
+    tiers: [
+      { weight: 0.20, desc: "第一層：最高頻100字，如 important, always, because（刻意壓低）" },
+      { weight: 0.40, desc: "第二層：中頻300字，如 encourage, pollute, consider, population" },
+      { weight: 0.40, desc: "第三層：低頻300字，如 dedicate, qualify, symptom, negotiate" },
+    ]
+  },
+  "高中": {
+    total: "約5800字新增（累計~7000字，大考中心高中英文參考詞彙表）",
+    tiers: [
+      { weight: 0.20, desc: "第一層：常見高中詞，如 analyze, contribute, demonstrate（刻意壓低）" },
+      { weight: 0.40, desc: "第二層：中頻詞，如 ambiguous, eloquent, inevitable, perceive" },
+      { weight: 0.40, desc: "第三層：低頻詞，如 meticulous, provocative, ostracize, lucid" },
+    ]
+  },
+  "大學": {
+    total: "約5000字新增（累計~12000字，CEFR B2-C1 / 學術詞彙AWL）",
+    tiers: [
+      { weight: 0.20, desc: "第一層：常見學術詞，如 hypothesis, analysis, methodology（刻意壓低）" },
+      { weight: 0.40, desc: "第二層：中頻學術詞，如 paradigm, articulate, disseminate, inherent" },
+      { weight: 0.40, desc: "第三層：低頻學術詞，如 epistemology, juxtapose, exacerbate, obfuscate" },
+    ]
+  },
+  "GRE": {
+    total: "約4000字（C1-C2低頻難詞，獨立集）",
+    tiers: [
+      { weight: 0.15, desc: "第一層：GRE常見詞，如 ambivalent, benevolent, candid（刻意壓低）" },
+      { weight: 0.35, desc: "第二層：中頻GRE詞，如 loquacious, perfidious, recalcitrant, sanguine" },
+      { weight: 0.50, desc: "第三層：高難度GRE詞，如 tendentious, adumbrate, nugatory, abstruse" },
+    ]
+  },
+  "口語": {
+    total: "約1500個常用口語表達（片語動詞+俚語，CEFR A2-B2）",
+    tiers: [
+      { weight: 0.20, desc: "第一層：最常見口語，如 hang out, no wonder, by the way（刻意壓低）" },
+      { weight: 0.40, desc: "第二層：中頻口語，如 figure out, blow off steam, on the fence" },
+      { weight: 0.40, desc: "第三層：較少見口語，如 bite the bullet, read between the lines, off the top of my head" },
+    ]
+  }
+};
+
+function pickTier(config) {
+  const r = Math.random();
+  let acc = 0;
+  for (const tier of config.tiers) {
+    acc += tier.weight;
+    if (r < acc) return tier.desc;
+  }
+  return config.tiers[config.tiers.length - 1].desc;
 }
 
 // ── Level ──
@@ -409,7 +415,6 @@ async function fetchWord() {
   if (busy) return;
   busy = true;
 
-  // stop any ongoing TTS
   if (synth && synth.speaking) { synth.cancel(); }
   if (activeTtsBtn) { activeTtsBtn.classList.remove("speaking"); activeTtsBtn.textContent = "🔊"; activeTtsBtn = null; }
 
@@ -418,8 +423,18 @@ async function fetchWord() {
   card.classList.add("loading");
   nextBtn.disabled = true;
 
-  const prompt = `你是英文單字老師。請隨機給我一個「${level}」程度的英文單字，並搭配一句實用例句。
-輸出格式請嚴格遵守以下 JSON，不要輸出任何其他文字或說明：
+  const cfg      = LEVEL_CONFIG[level];
+  const tierDesc = pickTier(cfg);
+  const seed     = Math.floor(Math.random() * 99991) + 10;   // 隨機種子
+
+  const prompt =
+`你是英文單字老師。請依照以下條件出一個英文單字並搭配例句。
+
+【等級】${level}（詞彙庫：${cfg.total}）
+【本次抽取區段】${tierDesc}
+【隨機種子】${seed}（請用此數字增加選字隨機性，每次結果應不同）
+
+輸出格式請嚴格遵守以下 JSON，不可輸出任何其他文字或說明：
 {
   "word": "英文單字",
   "phonetic": "KK音標",
@@ -451,7 +466,6 @@ async function fetchWord() {
     const jsonMatch = raw.match(/\{[\s\S]*?\}/);
     if (!jsonMatch) throw new Error("AI 回應格式錯誤，請再試一次。");
     const w = JSON.parse(jsonMatch[0]);
-
     if (!w.word || !w.sentence_en) throw new Error("AI 回應欄位不完整，請再試一次。");
 
     renderCard(w);
@@ -468,24 +482,18 @@ async function fetchWord() {
 
 // ── Render card ──
 function renderCard(w) {
-  const re = new RegExp(`\\b(${escapeRe(w.word)}(?:s|ed|ing|er|est|ly)?)\\b`, "gi");
+  const re     = new RegExp(`\\b(${escapeRe(w.word)}(?:s|ed|ing|er|est|ly)?)\\b`, "gi");
   const sentEn = w.sentence_en.replace(re, '<span class="kw">$1</span>');
-
-  // Store plain text for TTS (strip html)
-  const plainSent = w.sentence_en;
 
   document.getElementById("card-content").innerHTML = `
     <div class="tag">${level} · ${w.pos || ""}</div>
-
     <div class="word-row">
       <div class="en-word">${w.word}</div>
       <button class="tts-btn" id="tts-word" title="朗讀單字">🔊</button>
     </div>
     <div class="phonetic">${w.phonetic || ""}</div>
-
     <hr class="divider">
     <div class="zh-meaning">${w.zh_meaning}</div>
-
     <div class="section-label">例句</div>
     <div class="sentence-block">
       <div class="sentence-row">
@@ -496,13 +504,8 @@ function renderCard(w) {
     </div>
   `;
 
-  // Bind TTS buttons after DOM insert
-  document.getElementById("tts-word").addEventListener("click", function() {
-    speak(w.word, this);
-  });
-  document.getElementById("tts-sent").addEventListener("click", function() {
-    speak(plainSent, this);
-  });
+  document.getElementById("tts-word").addEventListener("click", function() { speak(w.word, this); });
+  document.getElementById("tts-sent").addEventListener("click", function() { speak(w.sentence_en, this); });
 }
 
 function renderPlaceholder() {
@@ -514,10 +517,7 @@ function renderPlaceholder() {
 }
 
 // ── Model modal ──
-function openModal() {
-  document.getElementById("model-select").value = model;
-  document.getElementById("overlay").classList.add("show");
-}
+function openModal()  { document.getElementById("model-select").value = model; document.getElementById("overlay").classList.add("show"); }
 function closeModal() { document.getElementById("overlay").classList.remove("show"); }
 function closeModalOutside(e) { if (e.target === document.getElementById("overlay")) closeModal(); }
 function applyModel() {
@@ -530,8 +530,7 @@ function applyModel() {
 // ── Toast ──
 function showToast(msg) {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
+  t.textContent = msg; t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), 3500);
 }
 
